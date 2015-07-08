@@ -1,7 +1,6 @@
 package com.acme.order;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,8 +9,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -23,11 +25,8 @@ import com.acme.order.pizza.PizzaType;
 @Primary
 public class JdbcOrderRepository implements OrderRepository {
 
-	private final String url = "jdbc:mysql://localhost:3306/pizza-tutorial";
-
-	private final String user = "dbuser";
-
-	private final String password = "dbpass";
+	@Autowired
+	private DataSource dataSource;
 
 	@Override
 	public String save(PizzaOrder order) {
@@ -54,7 +53,7 @@ public class JdbcOrderRepository implements OrderRepository {
 			insert = false;
 		}
 
-		try (Connection connection = DriverManager.getConnection(url, user, password)) {
+		try (Connection connection = dataSource.getConnection()) {
 			try (PreparedStatement statement = connection.prepareStatement(SQL, Statement.RETURN_GENERATED_KEYS)) {
 				statement.setInt(1, customerId);
 				statement.setString(2, order.getState()
@@ -93,7 +92,7 @@ public class JdbcOrderRepository implements OrderRepository {
 			insert = false;
 		}
 
-		try (Connection connection = DriverManager.getConnection(url, user, password)) {
+		try (Connection connection = dataSource.getConnection()) {
 			try (PreparedStatement statement = connection.prepareStatement(SQL, Statement.RETURN_GENERATED_KEYS)) {
 				statement.setString(1, customer.getName());
 				statement.setString(2, customer.getEmail());
@@ -125,7 +124,7 @@ public class JdbcOrderRepository implements OrderRepository {
 		final String SQL = "SELECT o.id as order_id,o.customer_id as customer_id,o.status,o.type,o.estimatedDeliveryTime,"
 				+ "o.finishTime,c.name,c.email,c.address from order_t o,customer_t c where o.customer_id = c.id and o.id = ?";
 
-		try (Connection connection = DriverManager.getConnection(url, user, password)) {
+		try (Connection connection = dataSource.getConnection()) {
 			try (PreparedStatement statement = connection.prepareStatement(SQL)) {
 
 				statement.setInt(1, Integer.valueOf(pizzaOrderId));
@@ -150,7 +149,7 @@ public class JdbcOrderRepository implements OrderRepository {
 
 		List<PizzaOrder> orders = new ArrayList<>();
 
-		try (Connection connection = DriverManager.getConnection(url, user, password)) {
+		try (Connection connection = dataSource.getConnection()) {
 			try (Statement statement = connection.createStatement(); ResultSet rs = statement.executeQuery(SQL)) {
 				while (rs.next()) {
 					orders.add(buildOrder(rs));
@@ -183,7 +182,7 @@ public class JdbcOrderRepository implements OrderRepository {
 
 		List<PizzaOrder> orders = new ArrayList<>();
 
-		try (Connection connection = DriverManager.getConnection(url, user, password)) {
+		try (Connection connection = dataSource.getConnection()) {
 			try (PreparedStatement statement = connection.prepareStatement(SQL)) {
 
 				statement.setString(1, orderStatus.name());
