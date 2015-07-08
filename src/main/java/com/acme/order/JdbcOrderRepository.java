@@ -14,15 +14,13 @@ import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Repository;
 
 import com.acme.order.pizza.PizzaOrder;
 import com.acme.order.pizza.PizzaType;
 
 @Slf4j
-@Repository
-@Primary
+// @Repository
+// @Primary
 public class JdbcOrderRepository implements OrderRepository {
 
 	@Autowired

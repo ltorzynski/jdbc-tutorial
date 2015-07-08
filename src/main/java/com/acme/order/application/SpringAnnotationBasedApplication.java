@@ -10,6 +10,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.acme.order.Customer;
 import com.acme.order.pizza.PizzaOrderService;
@@ -18,6 +21,7 @@ import com.acme.order.pizza.PizzaType;
 @Slf4j
 @Configuration
 @ComponentScan("com.acme.order")
+@EnableTransactionManagement
 public class SpringAnnotationBasedApplication {
 
 	public static void main(String[] args) {
@@ -62,6 +66,11 @@ public class SpringAnnotationBasedApplication {
 		ds.setInitialSize(5);
 
 		return ds;
+	}
+
+	@Bean
+	public PlatformTransactionManager txManager() {
+		return new DataSourceTransactionManager(dataSource());
 	}
 
 	public static void printDataSourceStats(ApplicationContext ctx) {

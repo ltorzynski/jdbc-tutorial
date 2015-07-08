@@ -10,7 +10,7 @@
     </Appenders>
     <Loggers>
     	<Logger name="org.springframework" level="info"/>
-    	
+    	<Logger name="org.springframework.transaction" level="debug"/>
     		
         <Root level="debug">
             <AppenderRef ref="Console" />
